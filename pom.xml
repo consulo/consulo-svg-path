@@ -30,6 +30,7 @@
     <modules>
         <module>language-api</module>
         <module>language-impl</module>
+        <module>svg-impl</module>
         <module>plugin</module>
     </modules>
 </project>
