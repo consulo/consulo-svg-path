@@ -1,0 +1,8 @@
+<consulo-plugin>
+    <id>consulo.svg.path</id>
+    <name>SVG Path</name>
+    <tags>
+        <tag>custom.language</tag>
+    </tags>
+    <version>SNAPSHOT</version>
+</consulo-plugin>

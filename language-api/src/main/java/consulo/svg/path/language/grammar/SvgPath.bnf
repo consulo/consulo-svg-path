@@ -1,0 +1,105 @@
+/*
+ * Copyright 2013-2026 consulo.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+  parserClass            = "consulo.svg.path.language.impl.syntax.SvgPathSyntaxParser"
+  extends                = "consulo.svg.path.language.impl.psi.SvgPathElementImpl"
+  version                = "3"
+
+  psiClassPrefix         = "SvgPath"
+  psiImplClassSuffix     = "Impl"
+  psiPackage             = "consulo.svg.path.language.psi"
+  psiImplPackage         = "consulo.svg.path.language.impl.psi"
+  psiVisitorName         = "SvgPathElementVisitor"
+
+  elementTypeHolderClass = "consulo.svg.path.language.psi.SvgPathTypes"
+  elementTypeClass       = "consulo.svg.path.language.SvgPathElementType"
+  tokenTypeClass         = "consulo.svg.path.language.SvgPathTokenType"
+
+  implements("command") = "consulo.svg.path.language.psi.SvgPathElement"
+  extends(".*_command") = command
+
+  tokens = [
+    MOVE_TO
+    LINE_TO
+    HORIZONTAL_LINE_TO
+    VERTICAL_LINE_TO
+    CURVE_TO
+    SMOOTH_CURVE_TO
+    QUADRATIC_TO
+    SMOOTH_QUADRATIC_TO
+    ARC_TO
+    CLOSE_PATH
+
+    NUMBER
+    COMMA
+  ]
+}
+
+svgPath ::= command*
+
+command ::= move_to_command
+  | line_to_command
+  | horizontal_line_to_command
+  | vertical_line_to_command
+  | curve_to_command
+  | smooth_curve_to_command
+  | quadratic_to_command
+  | smooth_quadratic_to_command
+  | arc_to_command
+  | close_path_command
+
+// M/m x,y (x,y)*
+move_to_command ::= MOVE_TO coordinate_pair+ { pin = 1 }
+
+// L/l x,y (x,y)*
+line_to_command ::= LINE_TO coordinate_pair+ { pin = 1 }
+
+// H/h x+
+horizontal_line_to_command ::= HORIZONTAL_LINE_TO coordinate+ { pin = 1 }
+
+// V/v y+
+vertical_line_to_command ::= VERTICAL_LINE_TO coordinate+ { pin = 1 }
+
+// C/c (x1,y1 x2,y2 x,y)+
+curve_to_command ::= CURVE_TO curve_to_arg_group+ { pin = 1 }
+
+// S/s (x2,y2 x,y)+
+smooth_curve_to_command ::= SMOOTH_CURVE_TO smooth_curve_to_arg_group+ { pin = 1 }
+
+// Q/q (x1,y1 x,y)+
+quadratic_to_command ::= QUADRATIC_TO quadratic_to_arg_group+ { pin = 1 }
+
+// T/t (x,y)+
+smooth_quadratic_to_command ::= SMOOTH_QUADRATIC_TO coordinate_pair+ { pin = 1 }
+
+// A/a (rx ry x-rotation large-arc-flag sweep-flag x y)+
+arc_to_command ::= ARC_TO arc_arg_group+ { pin = 1 }
+
+// Z/z
+close_path_command ::= CLOSE_PATH
+
+coordinate_pair ::= coordinate COMMA? coordinate
+
+coordinate ::= NUMBER
+
+curve_to_arg_group ::= coordinate_pair COMMA? coordinate_pair COMMA? coordinate_pair
+
+smooth_curve_to_arg_group ::= coordinate_pair COMMA? coordinate_pair
+
+quadratic_to_arg_group ::= coordinate_pair COMMA? coordinate_pair
+
+arc_arg_group ::= coordinate COMMA? coordinate COMMA? coordinate COMMA? coordinate COMMA? coordinate COMMA? coordinate_pair
